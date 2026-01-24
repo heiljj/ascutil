@@ -14,4 +14,4 @@ dynamic = ["version"]
 readme = "README.md"
 
 [project.urls]
-Homepages = "https://github.com/heiljj/ascutil"
+Homepage = "https://github.com/heiljj/ascutil"
