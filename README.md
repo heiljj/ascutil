@@ -1,6 +1,11 @@
 # ascutil
 Python bindings for fast .asc circuit mutation.
 
+## Installation
+```
+pip install ascutil
+```
+
 ## Usage
 ```
 from ascutil import mutate
