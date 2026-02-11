@@ -22,3 +22,7 @@ source .venv/bin/activate
 pip install maturin
 maturin build --release
 ```
+Wheels are produced in ```target/wheels```.
+```
+pip install target/wheels/{wheel name}
+```
