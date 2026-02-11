@@ -1,5 +1,15 @@
 use pyo3::prelude::*;
 
+/*
+This is equivalent to the python module:
+<ascutil.py>
+def mutate(fpath: str, rows: list[int], columns: list[int], mutation_chance: float) -> None
+    pass
+
+
+When mutate is called, the values are converted into rust types
+and passed to the mutate function below.
+*/
 #[pymodule]
 mod ascutil {
     use pyo3::prelude::*;
@@ -47,13 +57,14 @@ pub mod circuit {
             Circuit { mmap: mmap, mutation_chance, index: 0, rows: rows, columns: columns, rng: rand::rng(), uf: UniformFloat::new(0.0, 1.0).unwrap()}
         }
 
+        /// Whether safe to consume another character
         fn next_available(&self) -> bool {
             self.mmap.len() > self.index
         }
 
+        /// Whether safe to consume amount characters
         fn characters_available(&self, amount: usize) -> bool {
             self.mmap.len() >= self.index + amount - 1
-
         }
 
         /// Moves cursor to first character after next newline
@@ -61,7 +72,6 @@ pub mod circuit {
             if !self.next_available() {
                 return false;
             }
-
 
             while self.mmap[self.index] != b'\n' {
                 self.index += 1;
@@ -75,7 +85,7 @@ pub mod circuit {
             true
         }
 
-        /// Whether the cursor is at a logic tile
+        /// Whether the cursor is at the start of a .logic_tile
         fn check_logic_tile(&self) -> bool {
             if !self.characters_available(b".logic_tile".len()) {
                 return false;
@@ -109,7 +119,7 @@ pub mod circuit {
         }
 
         /// Mutates logic tile. Assumes cursor is at first bit of logic tile. Moves cursor to
-        /// next line after logic tile afterwards.
+        /// to first line after logic tile.
         fn mutate_tile(&mut self) {
             for col in &self.columns {
                 for row in &self.rows {
@@ -132,6 +142,7 @@ pub mod circuit {
             }
         }
 
+        /// Mutates each logic tile. Flushes changes to file.
         pub fn mutate(&mut self) {
             while self.goto_logic_tile() {
                 self.mutate_tile();
